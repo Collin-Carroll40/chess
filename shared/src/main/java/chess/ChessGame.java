@@ -54,7 +54,35 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(startPosition);
+
+        if (piece == null) {
+            return null;
+        }
+
+        Collection<ChessMove> validMoves = new java.util.ArrayList<>();
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
+
+        // Simulation Loop I dont know if this is the fastest or will slow it down too much?
+        for (ChessMove move : possibleMoves) {
+            // Record the state before moving
+            ChessPiece pieceAtDest = board.getPiece(move.getEndPosition());
+
+            // Do the move (temporarily)
+            board.addPiece(move.getEndPosition(), piece);
+            board.addPiece(move.getStartPosition(), null);
+
+            // Check if King is safe
+            if (!isInCheck(piece.getTeamColor())) {
+                validMoves.add(move);
+            }
+
+            // Undo the move (restore state)
+            board.addPiece(move.getStartPosition(), piece);
+            board.addPiece(move.getEndPosition(), pieceAtDest);
+        }
+
+        return validMoves;
     }
 
     /**
@@ -81,7 +109,7 @@ public class ChessGame {
         }
 
         for (int row = 1 ; row <= 8; row++){
-            for (int col = 1; row <= 8; row++){
+            for (int col = 1; col <= 8; col++){
 
                 ChessPosition pos = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(pos);
@@ -110,7 +138,7 @@ public class ChessGame {
                 ChessPosition pos = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(pos);
 
-                // Check if this piece is the King of the correct color
+                // Check if this is correct color
                 if (piece != null &&
                         piece.getPieceType() == ChessPiece.PieceType.KING &&
                         piece.getTeamColor() == teamColor) {
