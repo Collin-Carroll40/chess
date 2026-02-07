@@ -188,7 +188,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return isInCheck(teamColor) && !hasLegalMoves(teamColor);
     }
 
     /**
@@ -199,8 +199,30 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return !isInCheck(teamColor) && !hasLegalMoves(teamColor);
     }
+
+    // helper haslegalmove this is important for chack and stale
+
+    private boolean hasLegalMoves(TeamColor teamColor) {
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pos);
+
+                // If it's my piece, check if it has any valid moves
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> moves = validMoves(pos);
+                    if (moves != null && !moves.isEmpty()) {
+                        return true; // We found at least one move!
+                    }
+                }
+            }
+        }
+        return false; // No moves found anywhere
+    }
+
+
 
     /**
      * Sets this game's chessboard with a given board
