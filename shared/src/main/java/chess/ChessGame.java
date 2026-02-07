@@ -210,7 +210,7 @@ public class ChessGame {
                 ChessPosition pos = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(pos);
 
-                // If it's my piece, check if it has any valid moves
+                // If it's my right color, check if it has any valid moves
                 if (piece != null && piece.getTeamColor() == teamColor) {
                     Collection<ChessMove> moves = validMoves(pos);
                     if (moves != null && !moves.isEmpty()) {
@@ -219,7 +219,7 @@ public class ChessGame {
                 }
             }
         }
-        return false; // No moves found anywhere
+        return false; // No moves found anywhere shouldn't happen
     }
 
 
