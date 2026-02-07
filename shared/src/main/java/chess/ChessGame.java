@@ -223,7 +223,7 @@ public class ChessGame {
     }
 
 
-
+// this helper helped haha
     /**
      * Sets this game's chessboard with a given board
      *
