@@ -15,7 +15,7 @@ public class ChessBoard {
     public ChessBoard() {
 
     }
-
+// testing new github connection
     /**
      * Adds a chess piece to the chessboard
      *
