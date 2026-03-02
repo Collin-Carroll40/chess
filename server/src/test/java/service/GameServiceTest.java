@@ -1,4 +1,4 @@
-package serviceTests;
+package service;
 
 import dataaccess.*;
 import model.AuthData;
