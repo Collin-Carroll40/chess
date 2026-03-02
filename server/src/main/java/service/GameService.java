@@ -61,7 +61,7 @@ public class GameService {
             blackUser = auth.username();
         } else {
             // non white black
-            throw new DataAccessException("Error: bad request");
+            throw new DataAccessException("Error: bad request incorrect color");
         }
         // If color is null, they are joining as an observer
 

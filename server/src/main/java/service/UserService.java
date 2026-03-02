@@ -45,7 +45,7 @@ public class UserService {
 
         // Verify user exists + password match
         if (user == null || !user.password().equals(req.password())) {
-            throw new DataAccessException("Error: unauthorized");
+            throw new DataAccessException("Error: unauthorized login ");
         }
 
         AuthData auth = authDAO.createAuth(req.username());
