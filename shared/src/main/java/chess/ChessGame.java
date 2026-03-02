@@ -139,8 +139,8 @@ public class ChessGame {
             return false;
         }
 
-        for (int row = 1 ; row <= 8; row++){
-            for (int col = 1; col <= 8; col++){
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
 
                 ChessPosition pos = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(pos);
@@ -224,6 +224,7 @@ public class ChessGame {
 
 
 // this helper helped haha
+
     /**
      * Sets this game's chessboard with a given board
      *

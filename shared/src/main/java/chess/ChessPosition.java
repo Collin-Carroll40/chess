@@ -12,21 +12,34 @@ public class ChessPosition {
         this.col = col;
     }
 
-    public int getRow() { return row; }
+    public int getRow() {
+        return row;
+    }
 
-    public int getColumn() { return col; }
+    public int getColumn() {
+        return col;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
         ChessPosition that = (ChessPosition) o;
         return row == that.row && col == that.col;
     }
 
     @Override
-    public int hashCode() { return Objects.hash(row, col); }
+    public int hashCode() {
+        return Objects.hash(row, col);
+    }
 
     @Override
-    public String toString() { return String.format("[%d,%d]", row, col); }
+    public String toString() {
+        return String.format("[%d,%d]", row, col);
+    }
 }
