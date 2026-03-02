@@ -59,8 +59,8 @@ public class GameService {
         } else if ("BLACK".equals(req.playerColor())) {
             if (blackUser != null) throw new DataAccessException("Error: already taken");
             blackUser = auth.username();
-        } else if (req.playerColor() != null && !req.playerColor().isEmpty()) {
-            // If they provided a color that isn't WHITE or BLACK
+        } else {
+            // non white black
             throw new DataAccessException("Error: bad request");
         }
         // If color is null, they are joining as an observer
