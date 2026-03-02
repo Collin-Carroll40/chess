@@ -36,6 +36,12 @@ public class Server {
         // --- ENDPOINTS ---
         app.delete("/db", new ClearHandler(clearService)::handle);
         app.post("/user", new RegisterHandler(userService)::handle);
+        app.post("/session", new LoginHandler(userService)::handle);
+        app.delete("/session", new LogoutHandler(userService)::handle);
+
+        app.get("/game", new server.handler.ListGamesHandler(gameService)::handle);
+        app.post("/game", new server.handler.CreateGameHandler(gameService)::handle);
+        app.put("/game", new server.handler.JoinGameHandler(gameService)::handle);
 
         return app.port();
     }
