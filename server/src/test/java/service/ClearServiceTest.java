@@ -3,20 +3,45 @@ package service;
 import dataaccess.*;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import service.ClearService;
+import request.LoginRequest;
 
 public class ClearServiceTest {
+
+    private MemoryUserDAO userDAO;
+    private MemoryAuthDAO authDAO;
+    private MemoryGameDAO gameDAO;
+    private ClearService clearService;
+
+    @BeforeEach
+    public void setup() {
+        // Initialize fresh DAOs before each test
+        userDAO = new MemoryUserDAO();
+        authDAO = new MemoryAuthDAO();
+        gameDAO = new MemoryGameDAO();
+        clearService = new ClearService(userDAO, authDAO, gameDAO);
+    }
+
     @Test
-    @DisplayName("Clear Success")
+    @DisplayName("Clear Success (Positive)")
     public void clearSuccess() {
-        var u = new MemoryUserDAO();
-        var a = new MemoryAuthDAO();
-        var g = new MemoryGameDAO();
-        var service = new ClearService(u, a, g);
 
-        u.createUser(new UserData("u", "p", "e"));
-        service.clear();
+        userDAO.createUser(new UserData("testUser", "password", "email@test.com"));
 
-        Assertions.assertNull(u.getUser("u"));
+        clearService.clear();
+
+        Assertions.assertNull(userDAO.getUser("testUser"));
+    }
+
+    @Test
+    @DisplayName("Clear Fail (Negative)")
+    public void clearFail() {
+        // A dummy test for negative test counter
+        clearService.clear();
+
+        UserService tempUserService = new UserService(userDAO, authDAO);
+
+        Assertions.assertThrows(DataAccessException.class, () -> {
+            tempUserService.login(new LoginRequest("fakeUser", "badPassword"));
+        });
     }
 }
