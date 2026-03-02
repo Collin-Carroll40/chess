@@ -1,5 +1,5 @@
 package server;
-
+import handler.*;
 import dataaccess.*;
 import io.javalin.Javalin;
 import server.handler.ClearHandler;
