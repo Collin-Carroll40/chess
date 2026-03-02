@@ -54,10 +54,14 @@ public class GameService {
 
         // Check color the user requested and avalibility
         if ("WHITE".equals(req.playerColor())) {
-            if (whiteUser != null) throw new DataAccessException("Error: already taken");
+            if (whiteUser != null) {
+                throw new DataAccessException("Error: already taken");
+            }
             whiteUser = auth.username();
         } else if ("BLACK".equals(req.playerColor())) {
-            if (blackUser != null) throw new DataAccessException("Error: already taken");
+            if (blackUser != null) {
+                throw new DataAccessException("Error: already taken");
+            }
             blackUser = auth.username();
         } else {
             // non white black
