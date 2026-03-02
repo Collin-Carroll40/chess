@@ -11,10 +11,8 @@ import java.util.Objects;
  */
 public class ChessGame {
 
-
     private TeamColor teamTurn;
     private ChessBoard board;
-
 
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
@@ -63,7 +61,7 @@ public class ChessGame {
         Collection<ChessMove> validMoves = new java.util.ArrayList<>();
         Collection<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
 
-        // Simulation Loop I dont know if this is the fastest or will slow it down too much?
+        // Simulation Loop
         for (ChessMove move : possibleMoves) {
             // Record the state before moving
             ChessPiece pieceAtDest = board.getPiece(move.getEndPosition());
@@ -125,7 +123,6 @@ public class ChessGame {
         teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
-
     /**
      * Determines if the given team is in check
      *
@@ -145,19 +142,20 @@ public class ChessGame {
                 ChessPosition pos = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(pos);
 
-                if (piece != null && piece.getTeamColor() != teamColor) {
-
-                    // Get all moves this enemy can make
-                    Collection<ChessMove> enemyMoves = piece.pieceMoves(board, pos);
-
-                    // Check if any of those moves land on the King
-                    for (ChessMove move : enemyMoves) {
-                        if (move.getEndPosition().equals(kingPosition)) {
-                            return true; // The King is under attack!
-                        }
-                    }
+                // GUARD CLAUSE: Skip empty squares and friendly pieces to fix NestingDepth error
+                if (piece == null || piece.getTeamColor() == teamColor) {
+                    continue;
                 }
 
+                // Get all moves this enemy can make (Now shifted one level left!)
+                Collection<ChessMove> enemyMoves = piece.pieceMoves(board, pos);
+
+                // Check if any of those moves land on the King
+                for (ChessMove move : enemyMoves) {
+                    if (move.getEndPosition().equals(kingPosition)) {
+                        return true; // The King is under attack!
+                    }
+                }
             }
         }
         return false;
@@ -177,9 +175,8 @@ public class ChessGame {
                 }
             }
         }
-        return null; // shouldnt happen
+        return null; // shouldn't happen
     }
-
 
     /**
      * Determines if the given team is in checkmate
@@ -202,28 +199,26 @@ public class ChessGame {
         return !isInCheck(teamColor) && !hasLegalMoves(teamColor);
     }
 
-    // helper haslegalmove this is important for chack and stale
-
+    // helper haslegalmove this is important for check and stale
     private boolean hasLegalMoves(TeamColor teamColor) {
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition pos = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(pos);
 
-                // If it's my right color, check if it has any valid moves
-                if (piece != null && piece.getTeamColor() == teamColor) {
-                    Collection<ChessMove> moves = validMoves(pos);
-                    if (moves != null && !moves.isEmpty()) {
-                        return true; // We found at least one move!
-                    }
+                // GUARD CLAUSE: Preemptively added to avoid a second NestingDepth error
+                if (piece == null || piece.getTeamColor() != teamColor) {
+                    continue;
+                }
+
+                Collection<ChessMove> moves = validMoves(pos);
+                if (moves != null && !moves.isEmpty()) {
+                    return true; // We found at least one move!
                 }
             }
         }
         return false; // No moves found anywhere shouldn't happen
     }
-
-
-// this helper helped haha
 
     /**
      * Sets this game's chessboard with a given board
@@ -242,7 +237,6 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return board;
     }
-
 
     @Override
     public boolean equals(Object o) {
