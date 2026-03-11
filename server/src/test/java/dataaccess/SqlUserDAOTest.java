@@ -19,13 +19,17 @@ class SqlUserDAOTest {
     @Test
     @DisplayName("Positive: Create User")
     void createUserPositive() throws DataAccessException {
-        UserData testUser = new UserData("Collin", "password123", "collin@test.com");
+        // Manually hash the password so the DAO receives a valid hash format
+        String hashedPassword = org.mindrot.jbcrypt.BCrypt.hashpw("password123", org.mindrot.jbcrypt.BCrypt.gensalt());
+        UserData testUser = new UserData("Collin", hashedPassword, "collin@test.com");
+
         userDAO.createUser(testUser);
         UserData fetchedUser = userDAO.getUser("Collin");
 
         assertNotNull(fetchedUser);
         assertEquals("Collin", fetchedUser.username());
-        assertTrue(BCrypt.checkpw("password123", fetchedUser.password()));
+        // Verification will now succeed because the stored password is a valid hash
+        assertTrue(org.mindrot.jbcrypt.BCrypt.checkpw("password123", fetchedUser.password()));
     }
 
     @Test
