@@ -9,9 +9,36 @@ import service.*;
 
 public class Server {
     // Create the DAOs
-    private final UserDAO userDAO = new MemoryUserDAO();
-    private final AuthDAO authDAO = new MemoryAuthDAO();
-    private final GameDAO gameDAO = new MemoryGameDAO();
+    UserDAO userDAO;
+
+    {
+        try {
+            userDAO = new SqlUserDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    AuthDAO authDAO;
+
+    {
+        try {
+            authDAO = new SqlAuthDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    GameDAO gameDAO;
+
+    {
+        try {
+            gameDAO = new SqlGameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     //Create the Services
     private final ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
