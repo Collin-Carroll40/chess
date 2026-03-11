@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.LoginResult;
@@ -20,31 +21,31 @@ public class UserService {
     }
 
     public RegisterResult register(RegisterRequest req) throws DataAccessException {
-        // Check for bad requests (missing info)
         if (req.username() == null || req.password() == null || req.email() == null) {
             throw new DataAccessException("Error: bad request");
         }
-        // Check if username is taken
+
         if (userDAO.getUser(req.username()) != null) {
             throw new DataAccessException("Error: already taken");
         }
 
-        // Create the user and generate an auth token
-        userDAO.createUser(new UserData(req.username(), req.password(), req.email()));
-        AuthData auth = authDAO.createAuth(req.username());
+        // Hash password and save user
+        String hashedPassword = BCrypt.hashpw(req.password(), BCrypt.gensalt());
+        userDAO.createUser(new UserData(req.username(), hashedPassword, req.email()));
 
+        AuthData auth = authDAO.createAuth(req.username());
         return new RegisterResult(auth.username(), auth.authToken());
     }
 
     public LoginResult login(LoginRequest req) throws DataAccessException {
-        UserData user = userDAO.getUser(req.username());
-
         if (req.username() == null || req.password() == null) {
             throw new DataAccessException("Error: bad request");
         }
 
-        // Verify user exists + password match
-        if (user == null || !user.password().equals(req.password())) {
+        UserData user = userDAO.getUser(req.username());
+
+        // Verify hash match
+        if (user == null || !BCrypt.checkpw(req.password(), user.password())) {
             throw new DataAccessException("Error: unauthorized login ");
         }
 
