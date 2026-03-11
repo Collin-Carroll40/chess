@@ -3,8 +3,6 @@ package server;
 import handler.*;
 import dataaccess.*;
 import io.javalin.Javalin;
-import server.handler.ClearHandler;
-import server.handler.RegisterHandler;
 import service.*;
 
 public class Server {
@@ -67,7 +65,7 @@ public class Server {
 
         // ENDPOINTS
         app.delete("/db", new ClearHandler(clearService)::handle);
-        app.post("/user", new RegisterHandler(userService)::handle);
+        app.post("/user", new server.handler.RegisterHandler(userService)::handle);
         app.post("/session", new LoginHandler(userService)::handle);
         app.delete("/session", new LogoutHandler(userService)::handle);
 
