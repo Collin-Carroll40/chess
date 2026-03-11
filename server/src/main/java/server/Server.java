@@ -11,30 +11,32 @@ public class Server {
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
+    private final ClearService clearService;
+    private final UserService userService;
+    private final GameService gameService;
 
     public Server() {
         try {
             userDAO = new SqlUserDAO();
             authDAO = new SqlAuthDAO();
             gameDAO = new SqlGameDAO();
+
+            clearService = new ClearService(userDAO, authDAO, gameDAO);
+            userService = new UserService(userDAO, authDAO);
+            gameService = new GameService(gameDAO, authDAO);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
     }
-
-    private final ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
-    private final UserService userService = new UserService(userDAO, authDAO);
-    private final GameService gameService = new GameService(gameDAO, authDAO);
 
     public int run(int port) {
         Javalin app = Javalin.create(config -> {
             config.staticFiles.add("/web");
         }).start(port);
 
-        // This handles the "Database Error Handling" test by ensuring a JSON body is returned
+        // This block is what the "Database Error Handling" test is checking
         app.exception(DataAccessException.class, (e, ctx) -> {
             String msg = e.getMessage();
-
             if (msg.contains("bad request")) {
                 ctx.status(400);
             } else if (msg.contains("unauthorized")) {
@@ -45,7 +47,7 @@ public class Server {
                 ctx.status(500);
             }
 
-            // The test fails if this body is null; this line ensures the "message" field exists
+            // Ensure the response body ALWAYS contains the JSON message
             ctx.result(new Gson().toJson(Map.of("message", msg)));
         });
 
@@ -54,7 +56,6 @@ public class Server {
         app.post("/user", new server.handler.RegisterHandler(userService)::handle);
         app.post("/session", new LoginHandler(userService)::handle);
         app.delete("/session", new LogoutHandler(userService)::handle);
-
         app.get("/game", new server.handler.ListGamesHandler(gameService)::handle);
         app.post("/game", new server.handler.CreateGameHandler(gameService)::handle);
         app.put("/game", new server.handler.JoinGameHandler(gameService)::handle);
@@ -63,6 +64,5 @@ public class Server {
     }
 
     public void stop() {
-        Javalin.create().stop();
     }
 }
