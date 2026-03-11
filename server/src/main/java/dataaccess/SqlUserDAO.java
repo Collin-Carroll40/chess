@@ -32,14 +32,12 @@ public class SqlUserDAO implements UserDAO {
 
     @Override
     public void createUser(UserData user) throws DataAccessException {
-        // Scramble the password before saving it to the database
-        String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
-
         try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 ps.setString(1, user.username());
-                ps.setString(2, hashedPassword);
+                // Save the password directly (it is already hashed by the Service)
+                ps.setString(2, user.password());
                 ps.setString(3, user.email());
                 ps.executeUpdate();
             }
