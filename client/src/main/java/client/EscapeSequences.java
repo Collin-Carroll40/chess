@@ -1,4 +1,4 @@
-package client;
+package client; /** change this **/
 
 /**
  * This class contains constants and functions relating to ANSI Escape Sequences that are useful in the Client display
