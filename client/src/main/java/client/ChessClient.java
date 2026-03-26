@@ -134,7 +134,9 @@ public class ChessClient {
             return;
         }
         int index = parseGameNumber(args[0]);
-        if (index < 0) return;
+        if (index < 0) {
+            return;
+        }
 
         String color = args[1].toUpperCase();
         if (!color.equals("WHITE") && !color.equals("BLACK")) {
@@ -157,7 +159,9 @@ public class ChessClient {
             return;
         }
         int index = parseGameNumber(args[0]);
-        if (index < 0) return;
+        if (index < 0) {
+            return;
+        }
 
         System.out.println("Observing game: " + lastListedGames[index].gameName());
 
