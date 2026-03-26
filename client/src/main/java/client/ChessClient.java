@@ -189,18 +189,18 @@ public class ChessClient {
     }
 
     private void printPreloginHelp() {
-        System.out.println("  help     - Show this help message");
-        System.out.println("  quit     - Exit the program");
-        System.out.println("  login    - Login: login <username> <password>");
-        System.out.println("  register - Register: register <username> <password> <email>");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "  help" + EscapeSequences.RESET_TEXT_COLOR + "     - Show this help message");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "  quit" + EscapeSequences.RESET_TEXT_COLOR + "     - Exit the program");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "  login" + EscapeSequences.RESET_TEXT_COLOR + "    - Login: login <username> <password>");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "  register" + EscapeSequences.RESET_TEXT_COLOR + " - Register: register <username> <password> <email>");
     }
 
     private void printPostloginHelp() {
-        System.out.println("  help     - Show this help message");
-        System.out.println("  logout   - Logout");
-        System.out.println("  create   - Create a game: create <game name>");
-        System.out.println("  list     - List all games");
-        System.out.println("  play     - Join a game: play <game #> <WHITE|BLACK>");
-        System.out.println("  observe  - Observe a game: observe <game #>");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "  help" + EscapeSequences.RESET_TEXT_COLOR + "     - Show this help message");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "  logout" + EscapeSequences.RESET_TEXT_COLOR + "   - Logout");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "  create" + EscapeSequences.RESET_TEXT_COLOR + "   - Create a game: create <game name>");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "  list" + EscapeSequences.RESET_TEXT_COLOR + "     - List all games");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "  play" + EscapeSequences.RESET_TEXT_COLOR + "     - Join a game: play <game #> <WHITE|BLACK>");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "  observe" + EscapeSequences.RESET_TEXT_COLOR + "  - Observe a game: observe <game #>");
     }
 }
