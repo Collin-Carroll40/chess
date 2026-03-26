@@ -22,7 +22,8 @@ public class ChessClient {
     }
 
     public void run() {
-        System.out.println("♕ 240 Chess Client. Type help to get started.");
+        System.out.println(EscapeSequences.SET_TEXT_BOLD + "♕ Welcome to 240 Chess!" + EscapeSequences.RESET_TEXT_BOLD_FAINT);
+        System.out.println("Type 'help' to get started." + "\n");
         while (true) {
             System.out.print(state == State.PRELOGIN ? "[LOGGED_OUT] >>> " : "[LOGGED_IN] >>> ");
             String input = scanner.nextLine().trim();
