@@ -1,4 +1,4 @@
-package client;
+package client; /** i cant get these to pass **/
 
 import org.junit.jupiter.api.*;
 import server.Server;
