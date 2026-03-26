@@ -26,7 +26,9 @@ public class ChessClient {
         while (true) {
             System.out.print(state == State.PRELOGIN ? "[LOGGED_OUT] >>> " : "[LOGGED_IN] >>> ");
             String input = scanner.nextLine().trim();
-            if (input.isEmpty()) continue;
+            if (input.isEmpty()) {
+                continue;
+            }
 
             try {
                 String[] parts = input.split("\\s+");
@@ -34,7 +36,9 @@ public class ChessClient {
                 String[] args = Arrays.copyOfRange(parts, 1, parts.length);
 
                 if (state == State.PRELOGIN) {
-                    if (!handlePrelogin(cmd, args)) return;
+                    if (!handlePrelogin(cmd, args)) {
+                        return;
+                    }
                 } else {
                     handlePostlogin(cmd, args);
                 }
