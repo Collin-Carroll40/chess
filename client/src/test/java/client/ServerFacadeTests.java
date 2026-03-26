@@ -113,4 +113,10 @@ public class ServerFacadeTests {
         var auth2 = facade.register("joinUser3", "pass2", "e2@e.com");
         assertThrows(Exception.class, () -> facade.joinGame(auth2.authToken(), game.gameID(), "WHITE"));
     }
+    // ===== CLEAR =====
+    @Test
+    void clearPositive() throws Exception {
+        facade.register("clearUser", "pass", "e@e.com");
+        assertDoesNotThrow(() -> facade.clear());
+    }
 }
