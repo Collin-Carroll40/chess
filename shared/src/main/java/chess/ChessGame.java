@@ -13,6 +13,10 @@ public class ChessGame {
 
     private TeamColor teamTurn;
     private ChessBoard board;
+    private boolean isOver = false;
+
+    public boolean isOver() { return isOver; }
+    public void setOver(boolean over) { isOver = over; }
 
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
