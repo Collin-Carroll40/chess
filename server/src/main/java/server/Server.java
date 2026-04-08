@@ -30,20 +30,28 @@ public class Server {
     }
 
     public int run(int port) {
+        WebSocketHandler wsHandler = new WebSocketHandler(gameDAO, authDAO);
+
         Javalin app = Javalin.create(config -> {
             config.staticFiles.add("/web");
         }).start(port);
+
+        app.ws("/ws", ws -> {
+            ws.onConnect(ctx -> {});
+            ws.onMessage(ctx -> {
+                wsHandler.onMessage(ctx.session, ctx.message());
+            });
+            ws.onClose(ctx -> {});
+        });
 
         // 1. Handle our standard database errors
         app.exception(DataAccessException.class, (e, ctx) -> {
             String msg = e.getMessage();
 
-            // Prevent crash if the exception has no message
             if (msg == null) {
                 msg = "unknown error";
             }
 
-            // The test STRICTLY requires the prefix "Error: "
             if (!msg.startsWith("Error: ")) {
                 msg = "Error: " + msg;
             }
