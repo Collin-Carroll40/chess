@@ -9,3 +9,5 @@ public class ClientMain {
         new ChessClient(serverUrl).run();
     }
 }
+
+// test 6 d

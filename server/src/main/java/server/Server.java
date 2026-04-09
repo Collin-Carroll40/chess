@@ -37,7 +37,9 @@ public class Server {
         }).start(port);
 
         app.ws("/ws", ws -> {
-            ws.onConnect(ctx -> {});
+            ws.onConnect(ctx -> {
+                ctx.session.setIdleTimeout(java.time.Duration.ofMinutes(5));
+            });
             ws.onMessage(ctx -> {
                 wsHandler.onMessage(ctx.session, ctx.message());
             });
