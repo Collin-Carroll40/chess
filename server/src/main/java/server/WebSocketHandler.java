@@ -99,12 +99,7 @@ public class WebSocketHandler {
             }
 
             String username = auth.username();
-            ChessGame.TeamColor playerColor = null;
-            if (username.equals(game.whiteUsername())) {
-                playerColor = ChessGame.TeamColor.WHITE;
-            } else if (username.equals(game.blackUsername())) {
-                playerColor = ChessGame.TeamColor.BLACK;
-            }
+            ChessGame.TeamColor playerColor = getPlayerColor(username, game);
 
             if (playerColor == null) {
                 sendError(session, "Error: observers cannot make moves");
@@ -122,29 +117,12 @@ public class WebSocketHandler {
             gameDAO.updateGame(updated);
 
             connections.broadcast(gameID, null, new LoadGameMessage(updated));
-
             connections.broadcast(gameID, authToken,
                     new NotificationMessage(username + " made a move: " + move));
 
             ChessGame.TeamColor opponent = (playerColor == ChessGame.TeamColor.WHITE)
                     ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
-
-            if (chessGame.isInCheckmate(opponent)) {
-                chessGame.setOver(true);
-                gameDAO.updateGame(new GameData(game.gameID(), game.whiteUsername(),
-                        game.blackUsername(), game.gameName(), chessGame));
-                connections.broadcast(gameID, null,
-                        new NotificationMessage(opponent + " is in checkmate"));
-            } else if (chessGame.isInStalemate(opponent)) {
-                chessGame.setOver(true);
-                gameDAO.updateGame(new GameData(game.gameID(), game.whiteUsername(),
-                        game.blackUsername(), game.gameName(), chessGame));
-                connections.broadcast(gameID, null,
-                        new NotificationMessage("Game ended in stalemate"));
-            } else if (chessGame.isInCheck(opponent)) {
-                connections.broadcast(gameID, null,
-                        new NotificationMessage(opponent + " is in check"));
-            }
+            checkGameStatus(gameID, game, chessGame, opponent);
 
         } catch (InvalidMoveException e) {
             sendError(session, "Error: invalid move - " + e.getMessage());
@@ -218,6 +196,35 @@ public class WebSocketHandler {
         } catch (DataAccessException e) {
             sendError(session, "Error: " + e.getMessage());
         }
+    }
+
+    private ChessGame.TeamColor getPlayerColor(String username, GameData game) {
+        if (username.equals(game.whiteUsername())) {
+            return ChessGame.TeamColor.WHITE;
+        } else if (username.equals(game.blackUsername())) {
+            return ChessGame.TeamColor.BLACK;
+        }
+        return null;
+    }
+
+    private void checkGameStatus(int gameID, GameData game, ChessGame chessGame,
+                                 ChessGame.TeamColor opponent) throws IOException, DataAccessException {
+        if (chessGame.isInCheckmate(opponent)) {
+            endGame(game, chessGame, gameID, opponent + " is in checkmate");
+        } else if (chessGame.isInStalemate(opponent)) {
+            endGame(game, chessGame, gameID, "Game ended in stalemate");
+        } else if (chessGame.isInCheck(opponent)) {
+            connections.broadcast(gameID, null,
+                    new NotificationMessage(opponent + " is in check"));
+        }
+    }
+
+    private void endGame(GameData game, ChessGame chessGame, int gameID,
+                         String message) throws IOException, DataAccessException {
+        chessGame.setOver(true);
+        gameDAO.updateGame(new GameData(game.gameID(), game.whiteUsername(),
+                game.blackUsername(), game.gameName(), chessGame));
+        connections.broadcast(gameID, null, new NotificationMessage(message));
     }
 
     private void sendError(Session session, String message) throws IOException {
