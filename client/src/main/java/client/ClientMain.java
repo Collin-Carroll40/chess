@@ -10,4 +10,4 @@ public class ClientMain {
     }
 }
 
-// test 6 d
+// test resign right now looks good
