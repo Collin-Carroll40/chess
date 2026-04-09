@@ -47,18 +47,28 @@ public class WebSocketHandler {
         }
     }
 
+    private AuthData authenticate(Session session, String authToken) throws IOException, DataAccessException {
+        AuthData auth = authDAO.getAuth(authToken);
+        if (auth == null) {
+            sendError(session, "Error: unauthorized");
+        }
+        return auth;
+    }
+
+    private GameData findGame(Session session, int gameID) throws IOException, DataAccessException {
+        GameData game = gameDAO.getGame(gameID);
+        if (game == null) {
+            sendError(session, "Error: bad request - game not found");
+        }
+        return game;
+    }
+
     private void handleConnect(Session session, String authToken, int gameID) throws IOException {
         try {
-            AuthData auth = authDAO.getAuth(authToken);
-            if (auth == null) {
-                sendError(session, "Error: unauthorized");
-                return;
-            }
-            GameData game = gameDAO.getGame(gameID);
-            if (game == null) {
-                sendError(session, "Error: bad request - game not found");
-                return;
-            }
+            AuthData auth = authenticate(session, authToken);
+            if (auth == null) { return; }
+            GameData game = findGame(session, gameID);
+            if (game == null) { return; }
 
             connections.add(gameID, authToken, auth.username(), session);
             connections.sendToUser(authToken, gameID, new LoadGameMessage(game));
@@ -81,16 +91,10 @@ public class WebSocketHandler {
 
     private void handleMakeMove(Session session, String authToken, int gameID, ChessMove move) throws IOException {
         try {
-            AuthData auth = authDAO.getAuth(authToken);
-            if (auth == null) {
-                sendError(session, "Error: unauthorized");
-                return;
-            }
-            GameData game = gameDAO.getGame(gameID);
-            if (game == null) {
-                sendError(session, "Error: bad request");
-                return;
-            }
+            AuthData auth = authenticate(session, authToken);
+            if (auth == null) { return; }
+            GameData game = findGame(session, gameID);
+            if (game == null) { return; }
 
             ChessGame chessGame = game.game();
             if (chessGame.isOver()) {
@@ -133,16 +137,10 @@ public class WebSocketHandler {
 
     private void handleLeave(Session session, String authToken, int gameID) throws IOException {
         try {
-            AuthData auth = authDAO.getAuth(authToken);
-            if (auth == null) {
-                sendError(session, "Error: unauthorized");
-                return;
-            }
-            GameData game = gameDAO.getGame(gameID);
-            if (game == null) {
-                sendError(session, "Error: bad request");
-                return;
-            }
+            AuthData auth = authenticate(session, authToken);
+            if (auth == null) { return; }
+            GameData game = findGame(session, gameID);
+            if (game == null) { return; }
 
             String white = game.whiteUsername();
             String black = game.blackUsername();
@@ -164,16 +162,10 @@ public class WebSocketHandler {
 
     private void handleResign(Session session, String authToken, int gameID) throws IOException {
         try {
-            AuthData auth = authDAO.getAuth(authToken);
-            if (auth == null) {
-                sendError(session, "Error: unauthorized");
-                return;
-            }
-            GameData game = gameDAO.getGame(gameID);
-            if (game == null) {
-                sendError(session, "Error: bad request");
-                return;
-            }
+            AuthData auth = authenticate(session, authToken);
+            if (auth == null) { return; }
+            GameData game = findGame(session, gameID);
+            if (game == null) { return; }
 
             ChessGame chessGame = game.game();
             if (chessGame.isOver()) {
@@ -187,12 +179,7 @@ public class WebSocketHandler {
                 return;
             }
 
-            chessGame.setOver(true);
-            gameDAO.updateGame(new GameData(game.gameID(), game.whiteUsername(),
-                    game.blackUsername(), game.gameName(), chessGame));
-
-            connections.broadcast(gameID, null,
-                    new NotificationMessage(username + " resigned the game"));
+            endGame(game, chessGame, gameID, username + " resigned the game");
         } catch (DataAccessException e) {
             sendError(session, "Error: " + e.getMessage());
         }
