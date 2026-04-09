@@ -26,18 +26,24 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String msg) throws IOException {
-        UserGameCommand command = gson.fromJson(msg, UserGameCommand.class);
-        String authToken = command.getAuthToken();
-        int gameID = command.getGameID();
+        try {
+            UserGameCommand command = gson.fromJson(msg, UserGameCommand.class);
+            String authToken = command.getAuthToken();
+            int gameID = command.getGameID();
 
-        switch (command.getCommandType()) {
-            case CONNECT -> handleConnect(session, authToken, gameID);
-            case MAKE_MOVE -> {
-                MakeMoveCommand moveCmd = gson.fromJson(msg, MakeMoveCommand.class);
-                handleMakeMove(session, authToken, gameID, moveCmd.getMove());
+            switch (command.getCommandType()) {
+                case CONNECT -> handleConnect(session, authToken, gameID);
+                case MAKE_MOVE -> {
+                    MakeMoveCommand moveCmd = gson.fromJson(msg, MakeMoveCommand.class);
+                    handleMakeMove(session, authToken, gameID, moveCmd.getMove());
+                }
+                case LEAVE -> handleLeave(session, authToken, gameID);
+                case RESIGN -> handleResign(session, authToken, gameID);
             }
-            case LEAVE -> handleLeave(session, authToken, gameID);
-            case RESIGN -> handleResign(session, authToken, gameID);
+        } catch (Exception e) {
+            System.err.println("WebSocket error: " + e.getMessage());
+            e.printStackTrace();
+            sendError(session, "Error: " + e.getMessage());
         }
     }
 
