@@ -46,19 +46,26 @@ public class ChessClient implements WebSocketFacade.ServerMessageHandler {
             }
 
             try {
-                String[] parts = input.split("\\s+");
-                String cmd = parts[0].toLowerCase();
-                String[] args = Arrays.copyOfRange(parts, 1, parts.length);
-
-                switch (state) {
-                    case PRELOGIN -> { if (!handlePrelogin(cmd, args)) { return; } }
-                    case POSTLOGIN -> handlePostlogin(cmd, args);
-                    case GAMEPLAY -> handleGameplay(cmd, args);
+                if (!processInput(input)) {
+                    return;
                 }
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
             }
         }
+    }
+
+    private boolean processInput(String input) throws Exception {
+        String[] parts = input.split("\\s+");
+        String cmd = parts[0].toLowerCase();
+        String[] args = Arrays.copyOfRange(parts, 1, parts.length);
+
+        switch (state) {
+            case PRELOGIN -> { return handlePrelogin(cmd, args); }
+            case POSTLOGIN -> handlePostlogin(cmd, args);
+            case GAMEPLAY -> handleGameplay(cmd, args);
+        }
+        return true;
     }
 
     /** @return false if user wants to quit */
