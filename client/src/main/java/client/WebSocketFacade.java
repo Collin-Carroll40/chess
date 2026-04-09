@@ -2,11 +2,11 @@ package client;
 
 import chess.ChessMove;
 import com.google.gson.Gson;
+import jakarta.websocket.*;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
 
-import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 
