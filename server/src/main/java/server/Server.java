@@ -43,10 +43,14 @@ public class Server {
             ws.onMessage(ctx -> {
                 wsHandler.onMessage(ctx.session, ctx.message());
             });
-            ws.onClose(ctx -> {});
+            ws.onClose(ctx -> {
+                System.out.println("WebSocket closed: " + ctx.status() + " " + ctx.reason());
+            });
+            ws.onError(ctx -> {
+                System.err.println("WebSocket error: " + ctx.error());
+            });
         });
 
-        // 1. Handle our standard database errors
         app.exception(DataAccessException.class, (e, ctx) -> {
             String msg = e.getMessage();
 
@@ -71,7 +75,6 @@ public class Server {
             ctx.result(new Gson().toJson(Map.of("message", msg)));
         });
 
-        // 2. Catch-all for unexpected crashes simulated by the grader
         app.exception(Exception.class, (e, ctx) -> {
             String msg = e.getMessage();
             if (msg == null) {
@@ -85,7 +88,6 @@ public class Server {
             ctx.result(new Gson().toJson(Map.of("message", msg)));
         });
 
-        // ENDPOINTS
         app.delete("/db", new ClearHandler(clearService)::handle);
         app.post("/user", new server.handler.RegisterHandler(userService)::handle);
         app.post("/session", new LoginHandler(userService)::handle);
